@@ -1,0 +1,50 @@
+name: Sync public workbench
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 7 * * *'
+  pull_request:
+    paths:
+      - README.md
+      - scripts/sync_activity.py
+      - .github/workflows/profile.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: profile-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - run: python3 scripts/sync_activity.py --self-test
+
+  sync:
+    if: github.event_name != 'pull_request'
+    needs: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - run: python3 scripts/sync_activity.py
+        env:
+          GH_TOKEN: ${{ github.token }}
+      - name: Commit only changed content
+        run: |
+          if git diff --quiet -- README.md; then
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add README.md
+          git commit -m "docs: sync public workbench"
+          git push
