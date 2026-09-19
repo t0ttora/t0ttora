@@ -1,30 +1,28 @@
-<picture>
-  <source media="(max-width: 600px)" srcset="assets/identity-mobile.png">
-  <img src="assets/identity.png" width="100%" alt="Oluş Emre Demir — product thinking, AI-assisted building, real-world testing. Istanbul. Open to work.">
-</picture>
+<a href="https://www.olusemre.dev/en/works">
+  <picture>
+    <source media="(max-width: 600px)" srcset="assets/profile-mobile.png">
+    <img src="assets/profile.png" width="100%" alt="Oluş Emre Demir, independent product builder in Istanbul. I build with AI and study mechanical engineering. Selected work: 2yaka, taxi operations; talks2me, conversational experiments; Airium, physical product design. Open to work. Open the portfolio to explore these projects.">
+  </picture>
+</a>
 
-[Portfolio ↗](https://www.olusemre.dev/en) &nbsp; / &nbsp; [LinkedIn](https://www.linkedin.com/in/olusemre/) &nbsp; / &nbsp; [Email](mailto:olusemredemir@gmail.com)
-
-I’m a mechanical engineering student building software with AI. I work on product decisions, debugging, and testing — especially where an app meets a messy real-world workflow.
-
-### Selected work
-
-| Project | What I’m working on |
-| :--- | :--- |
-| **[2yaka ↗](https://www.olusemre.dev/en/works/2yaka)** | Taxi queues, driver apps, and station operations. |
-| **[talks2me ↗](https://www.olusemre.dev/en/works/talks2me)** | Live conversations with objects through a camera. |
-| **[Airium ↗](https://www.olusemre.dev/en/works/airium)** | Mechanical design and physical product development. |
-
-### Behind the work
-
-I use AI throughout development. My focus is turning an unclear need into a working flow, investigating what breaks, and checking the result on real devices and with real users.
-
-For the decisions, screens, and project context, see the **[case studies](https://www.olusemre.dev/en/works)**. Some project repositories are private.
+<p align="center">
+  <a href="https://www.olusemre.dev/en/works/2yaka">2yaka ↗</a> &nbsp; · &nbsp;
+  <a href="https://www.olusemre.dev/en/works/talks2me">talks2me ↗</a> &nbsp; · &nbsp;
+  <a href="https://www.olusemre.dev/en/works/airium">Airium ↗</a> &nbsp; · &nbsp;
+  <a href="https://www.linkedin.com/in/olusemre/">LinkedIn</a> &nbsp; · &nbsp;
+  <a href="mailto:olusemredemir@gmail.com">Get in touch</a>
+</p>
 
 <details>
-<summary>Recent public commits</summary>
+<summary>About the work / public activity</summary>
 
-One recent owner-authored commit per public project, from its default branch. Synced only when source data changes; this profile, forks, and archived repositories are excluded.
+I'm Oluş, a mechanical engineering student in Istanbul. I use AI tools to develop products, investigate problems, and test real user flows.
+
+- **[2yaka](https://www.olusemre.dev/en/works/2yaka)** — taxi queues, driver apps, and station operations.
+- **[talks2me](https://www.olusemre.dev/en/works/talks2me)** — conversations with objects through live audio and vision.
+- **[Airium](https://www.olusemre.dev/en/works/airium)** — mechanical design and physical product development.
+
+Some project source code is private. Below is one recent owner-authored commit per public project, from its default branch. Synced only when source data changes; this profile, forks, and archived repositories are excluded.
 
 <!-- activity:start -->
 <ul>
