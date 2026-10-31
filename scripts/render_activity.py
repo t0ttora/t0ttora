@@ -1,14 +1,9 @@
 #!/usr/bin/env python3
-"""Build a self-contained animated SVG from GitHub's public contribution calendar.
-
-No third-party service, secret in an image URL, or private repository name.
-Fetching/render failures leave the last committed visual untouched.
-"""
+"""Render an anonymous 2D calendar using public and opted-in private counts."""
 import argparse
 import datetime as dt
 import html
 import json
-import math
 import os
 from pathlib import Path
 import urllib.request
@@ -17,13 +12,13 @@ INK = "#10100e"
 PAPER = "#f8f7ef"
 MUTED = "#a5a59a"
 BLUE = "#1688e8"
-
+LEVELS = ["#252722", "#183e5b", "#16639a", "#1688e8", "#8ecbff"]
 QUERY = """query($login:String!){user(login:$login){contributionsCollection{
-contributionCalendar{totalContributions weeks{contributionDays{
-contributionCount date weekday}}}}}}"""
+hasAnyRestrictedContributions contributionCalendar{
+totalContributions weeks{contributionDays{contributionCount date weekday}}}}}}"""
 
 
-def load_calendar(login, fixture=None):
+def load_calendar(login, fixture=None, require_private=False):
     if fixture:
         response = json.loads(Path(fixture).read_text(encoding="utf-8-sig"))
     else:
@@ -41,17 +36,23 @@ def load_calendar(login, fixture=None):
             response = json.load(result)
     if response.get("errors"):
         raise RuntimeError("GitHub contribution query failed")
-    calendar = response["data"]["user"]["contributionsCollection"]["contributionCalendar"]
-    days = [day for week in calendar["weeks"] for day in week["contributionDays"]]
+    collection = response["data"]["user"]["contributionsCollection"]
+    if require_private and not collection.get("hasAnyRestrictedContributions"):
+        raise ValueError("Anonymous private counts are unavailable; keeping the previous chart")
+    source = collection["contributionCalendar"]
+    days = [day for week in source["weeks"] for day in week["contributionDays"]]
     if not days or len(days) > 380:
         raise ValueError("Unexpected contribution calendar length")
     for day in days:
         dt.date.fromisoformat(day["date"])
-        if not isinstance(day["contributionCount"], int) or day["contributionCount"] < 0:
+        if type(day["contributionCount"]) is not int or day["contributionCount"] < 0:
             raise ValueError("Invalid contribution count")
         if day["weekday"] not in range(7):
             raise ValueError("Invalid weekday")
-    return calendar
+    # Whitelist the complete output contract: dates, counts, weekdays only.
+    return {"weeks": [{"contributionDays": [
+        {key: day[key] for key in ("date", "contributionCount", "weekday")}
+        for day in week["contributionDays"]]} for week in source["weeks"]]}
 
 
 def text(x, y, value, size=16, fill=PAPER, **attrs):
@@ -61,128 +62,108 @@ def text(x, y, value, size=16, fill=PAPER, **attrs):
             f'{html.escape(str(value))}</text>')
 
 
-def render(calendar):
-    weeks = calendar["weeks"]
-    days = [d for w in weeks for d in w["contributionDays"]]
-    total = sum(d["contributionCount"] for d in days)
-    active = sum(d["contributionCount"] > 0 for d in days)
-    peak = max(d["contributionCount"] for d in days)
-    start, end = days[0]["date"], days[-1]["date"]
-    # Daily heights are logarithmic. Weeks run left-to-right; weekdays recede.
-    out = ['<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="440" '
-           'viewBox="0 0 1080 440" role="img" aria-labelledby="title desc">',
-           '<title id="title">A year of building — public GitHub activity</title>',
-           f'<desc id="desc">{total} public contributions, {active} active days, '
-           f'from {start} to {end}. Peak: {peak} in a day. '
-           'Each column is a week; seven rows are weekdays. '
-           'Vertical height uses log(1 + daily contributions). '
-           'The moving blue survey light is decorative and does not represent live events.</desc>',
-           '<defs><pattern id="dots" width="18" height="18" patternUnits="userSpaceOnUse">'
-           '<circle cx="1" cy="1" r=".7" fill="#f8f7ef" opacity=".07"/></pattern>'
-           '<linearGradient id="survey"><stop stop-color="#1688e8" stop-opacity="0"/>'
-           '<stop offset=".7" stop-color="#1688e8" stop-opacity=".2"/>'
-           '<stop offset="1" stop-color="#1688e8" stop-opacity="0"/></linearGradient>'
-           '<clipPath id="field"><rect x="30" y="100" width="1020" height="270"/></clipPath></defs>',
-           '<style>text{font-family:Arial,Helvetica,sans-serif}'
-           '.survey{animation:survey 9s linear infinite}'
-           '.spark{animation:light 7s ease-in-out infinite;animation-delay:var(--delay)}'
-           '@keyframes survey{0%{transform:translateX(-200px)}100%{transform:translateX(1300px)}}'
-           '@keyframes light{0%,80%,100%{opacity:.45}40%{opacity:1}}'
-           '@media(prefers-reduced-motion:reduce){.survey,.spark{animation:none}.survey{display:none}}'
-           '</style>',
-           f'<rect width="1080" height="440" fill="{INK}"/>',
-           '<rect width="1080" height="440" fill="url(#dots)"/>',
-           text(38, 54, 'A year of building.', 34),
-           text(1042, 50, 'PUBLIC GITHUB ACTIVITY', 12, MUTED, text_anchor="end"),
-           '<path d="M38 78H1042" stroke="#393934"/>']
-    last_month = None
-    for wi, week in enumerate(weeks):
+def intensity(count, peak):
+    if not count:
+        return LEVELS[0]
+    return LEVELS[1 + sum(count > peak * threshold for threshold in (.05, .2, .5))]
+
+
+def grid(weeks, x, y, step, cell, peak):
+    parts = []
+    for weekday, label in [(1, "M"), (3, "W"), (5, "F")]:
+        parts.append(text(x - 26, y + weekday * step + cell - 2, label, 11, MUTED))
+    previous_month = None
+    for index, week in enumerate(weeks):
+        first = week["contributionDays"][0]
+        month = first["date"][:7]
+        if month != previous_month:
+            # A new segment always starts with a date label.
+            label = dt.date.fromisoformat(first["date"]).strftime("%b")
+            if index != 0 or int(first["date"][8:]) <= 15 or len(weeks) < 3:
+                parts.append(text(x + index * step, y - 12, label, 11, MUTED))
+            previous_month = month
         for day in week["contributionDays"]:
-            month = day["date"][:7]
-            if day["date"][8:] <= "07" and day["weekday"] == 0 and month != last_month:
-                label = dt.date.fromisoformat(day["date"]).strftime("%b")
-                out.append(text(62 + wi * 17.7, 361, label, 11, MUTED))
-                last_month = month
-        # Draw far to near so real foreground cells occlude far ones.
-        for day in reversed(week["contributionDays"]):
             count = day["contributionCount"]
-            row = day["weekday"]
-            x = 66 + wi * 17.7 + row * 9
-            y = 291 - row * 13.5
-            h = 0 if not count else 8 + math.log1p(count) * 30
-            top = y - h
-            w, dx, dy = 12.5, 7, -5.2
-            if count:
-                intensity = math.log1p(count) / math.log1p(max(peak, 1))
-                out.extend([
-                    f'<path d="M{x:.1f},{y:.1f}v{-h:.1f}l{w},0v{h:.1f}Z" fill="#0c416b" stroke="#1688e8" stroke-opacity=".4" stroke-width=".6"/>',
-                    f'<path d="M{x+w:.1f},{y:.1f}v{-h:.1f}l{dx},{dy}v{h:.1f}Z" fill="#125c99"/>',
-                    f'<path class="spark" style="--delay:{-(wi*.19+row*.3):.2f}s" d="M{x:.1f},{top:.1f}h{w}l{dx},{dy}h{-w}Z" fill="{BLUE}" opacity="{.6+intensity*.4:.2f}"/>',
-                    f'<path d="M{x:.1f},{top:.1f}h{w}l{dx},{dy}" fill="none" stroke="#9fd4ff" stroke-width=".7"/>'
-                ])
-            else:
-                out.append(f'<path d="M{x:.1f},{y:.1f}h{w}l{dx},{dy}h{-w}Z" fill="#21211e" stroke="#393934" stroke-width=".6"/>')
-    out.extend([
-        '<g clip-path="url(#field)"><rect class="survey" x="-160" y="100" width="160" height="250" fill="url(#survey)"/></g>',
-        '<path d="M38 382H1042" stroke="#393934"/>',
-        text(38, 412, f'{total:,} public contributions', 16),
-        text(350, 412, f'{active} active days', 14, MUTED),
-        text(620, 412, f'Peak {peak} / day', 14, MUTED),
-        text(1042, 412, f'{start} — {end}', 12, MUTED, text_anchor="end"),
-        '</svg>'
-    ])
+            parts.append(
+                f'<rect x="{x + index * step}" y="{y + day["weekday"] * step}" '
+                f'width="{cell}" height="{cell}" rx="2" fill="{intensity(count, peak)}">'
+                f'<title>{day["date"]}: {count} contributions</title></rect>'
+            )
+    return parts
+
+
+def render_chart(calendar, mobile=False):
+    weeks = calendar["weeks"]
+    days = [day for week in weeks for day in week["contributionDays"]]
+    total = sum(day["contributionCount"] for day in days)
+    active = sum(day["contributionCount"] > 0 for day in days)
+    peak = max(day["contributionCount"] for day in days)
+    width, height = (480, 445) if mobile else (1080, 280)
+    out = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" '
+        f'viewBox="0 0 {width} {height}" role="img" aria-labelledby="title desc">',
+        '<title id="title">Contributions</title>',
+        f'<desc id="desc">{total:,} contributions over the past year, {active} active days. '
+        f'Public + private activity, {days[0]["date"]} to {days[-1]["date"]}. '
+        'Only daily counts are shown. Private repository names and details are never included.</desc>',
+        '<style>text{font-family:Arial,Helvetica,sans-serif}</style>',
+        f'<rect width="{width}" height="{height}" fill="{INK}"/>',
+    ]
+    if mobile:
+        out.extend([text(25, 43, "Contributions", 28),
+                    text(25, 73, f"{total:,} contributions · past year", 17, MUTED)])
+        split = (len(weeks) + 1) // 2
+        out.extend(grid(weeks[:split], 51, 119, 15, 12, peak))
+        if weeks[split:]:
+            out.extend(grid(weeks[split:], 51, 281, 15, 12, peak))
+        out.extend([
+            text(25, 418, "Public + private · counts only", 13, MUTED),
+            text(454, 418, f"{active} active days", 13, MUTED, text_anchor="end"),
+        ])
+    else:
+        out.extend([text(32, 47, "Contributions", 29),
+                    text(1048, 45, f"{total:,} contributions · past year", 18, PAPER, text_anchor="end")])
+        out.extend(grid(weeks, 75, 93, 18, 14, peak))
+        out.extend([
+            text(32, 253, "Public + private · repository details stay private", 13, MUTED),
+            text(650, 253, f"{active} active days", 13, MUTED),
+            text(891, 253, "Less", 11, MUTED),
+        ])
+        for index, color in enumerate(LEVELS):
+            out.append(f'<rect x="{925+index*18}" y="242" width="12" height="12" rx="2" fill="{color}"/>')
+        out.append(text(1048, 253, "More", 11, MUTED, text_anchor="end"))
+    out.append("</svg>")
     return "\n".join(out)
+
+
+def render(calendar):
+    return render_chart(calendar)
 
 
 def render_mobile(calendar):
-    days = [d for w in calendar["weeks"] for d in w["contributionDays"]]
-    monthly = {}
-    for day in days:
-        key = day["date"][:7]
-        monthly[key] = monthly.get(key, 0) + day["contributionCount"]
-    peak = max(monthly.values(), default=0)
-    total = sum(monthly.values())
-    out = [
-        '<svg xmlns="http://www.w3.org/2000/svg" width="480" height="380" viewBox="0 0 480 380" role="img" aria-labelledby="title desc">',
-        '<title id="title">A year of building — monthly public activity</title>',
-        f'<desc id="desc">{total} public contributions grouped by calendar month. Bar heights use log(1 + monthly contributions).</desc>',
-        '<style>text{font-family:Arial,Helvetica,sans-serif}.pulse{animation:light 7s ease-in-out infinite}@keyframes light{0%,100%{opacity:.65}50%{opacity:1}}@media(prefers-reduced-motion:reduce){.pulse{animation:none}}</style>',
-        f'<rect width="480" height="380" fill="{INK}"/>',
-        text(24, 48, "A year of building.", 30),
-        text(25, 78, "PUBLIC ACTIVITY / MONTHLY OVERVIEW", 11, MUTED),
-        '<path d="M24 99H456M24 293H456" stroke="#393934"/>'
-    ]
-    for index, (month, count) in enumerate(monthly.items()):
-        x = 28 + index * (419 / len(monthly))
-        height = 0 if not count else 10 + math.log1p(count) / math.log1p(peak) * 145
-        out.append(f'<rect class="pulse" x="{x:.2f}" y="{280-height:.2f}" width="18" height="{max(height,2):.2f}" fill="{BLUE if count else "#393934"}"/>')
-        out.append(text(round(x), 312, dt.date.fromisoformat(month+"-01").strftime("%b")[0], 12, MUTED))
-    out.extend([
-        text(24, 350, f"{total:,} public contributions", 18),
-        text(455, 350, days[-1]["date"], 12, MUTED, text_anchor="end"),
-        '</svg>'
-    ])
-    return "\n".join(out)
+    return render_chart(calendar, mobile=True)
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--login", default="t0ttora")
     parser.add_argument("--fixture")
+    parser.add_argument("--require-private", action="store_true",
+                        help="Refuse public-only output if opted-in private counts disappear")
     parser.add_argument("--output", default="assets/contributions.svg")
     args = parser.parse_args()
-    calendar = load_calendar(args.login, args.fixture)
-    rendered = render(calendar)
+    calendar = load_calendar(args.login, args.fixture, args.require_private)
     target = Path(args.output)
-    target.parent.mkdir(parents=True, exist_ok=True)
-    temporary = target.with_suffix(".tmp")
-    temporary.write_text(rendered, encoding="utf-8")
-    temporary.replace(target)
-    mobile = target.with_name(target.stem + "-mobile.svg")
-    mobile_temp = mobile.with_suffix(".tmp")
-    mobile_temp.write_text(render_mobile(calendar), encoding="utf-8")
-    mobile_temp.replace(mobile)
-    print(f"Rendered {target} using {sum(d['contributionCount'] for w in calendar['weeks'] for d in w['contributionDays'])} public contributions")
+    outputs = {target: render(calendar),
+               target.with_name(target.stem + "-mobile.svg"): render_mobile(calendar)}
+    # Validate and render both variants before changing either destination.
+    for path, value in outputs.items():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.with_suffix(".tmp").write_text(value, encoding="utf-8")
+    for path in outputs:
+        path.with_suffix(".tmp").replace(path)
+    total = sum(day["contributionCount"] for week in calendar["weeks"] for day in week["contributionDays"])
+    print(f"Rendered anonymous calendar with {total:,} contributions")
 
 
 if __name__ == "__main__":

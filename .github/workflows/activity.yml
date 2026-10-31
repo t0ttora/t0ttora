@@ -1,4 +1,4 @@
-name: Refresh public activity
+name: Refresh contribution calendar
 
 on:
   schedule:
@@ -26,10 +26,10 @@ jobs:
           python-version: '3.12'
       - name: Verify renderer
         run: python -m unittest discover -s tests
-      - name: Render public contribution calendar
+      - name: Render public and anonymous private contributions
         env:
           GH_TOKEN: ${{ github.token }}
-        run: python scripts/render_activity.py
+        run: python scripts/render_activity.py --require-private
       - name: Commit only the generated visual
         run: |
           if git diff --quiet -- assets/contributions.svg assets/contributions-mobile.svg; then

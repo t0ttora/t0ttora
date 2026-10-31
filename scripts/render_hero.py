@@ -35,8 +35,7 @@ def hero(mobile=False):
     w,h=(640,590) if mobile else (1080,430)
     out=[f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}" role="img" aria-labelledby="title desc">',
     '<title id="title">Oluş Emre Demir — Design. Build. Innovate.</title>',
-    '<desc id="desc">From idea to engineered product. Mechanical engineering, product and code. A rotating construction of the personal logo on a drafting canvas, inspired by olusemre.dev.</desc>',
-    '<style>.outer{animation:orbit 40s linear infinite}.inner{animation:orbit 24s linear infinite reverse}.mark{animation:breath 9s ease-in-out infinite}.trace{animation:trace 9s ease-in-out infinite}@keyframes orbit{to{transform:rotate(360deg)}}@keyframes breath{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}@keyframes trace{0%,100%{stroke-dashoffset:0;opacity:.5}50%{stroke-dashoffset:48;opacity:1}}@media(prefers-reduced-motion:reduce){.outer,.inner,.mark,.trace{animation:none}}</style>',
+    '<desc id="desc">From idea to engineered product. Mechanical engineering, product and code. The original personal logo on a quiet drafting canvas, inspired by olusemre.dev.</desc>',
     '<defs><pattern id="dots" x="0" y="0" width="18" height="18" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".8" fill="#f8f7ef" opacity=".1"/></pattern></defs>',
     f'<path fill="{INK}" d="M0 0H{w}V{h}H0Z"/>',
     f'<path fill="url(#dots)" d="M25 25H{w}V{h}H25Z"/>',
@@ -63,14 +62,8 @@ def hero(mobile=False):
                     lettering("From idea to engineered product.",51,341,21,"#a5a59a")])
         cx,cy,scale=834,229,1
     out.append(f'<g transform="translate({cx},{cy}) scale({scale})">')
-    out.append('<path d="M-167 0H167M0-164V164" stroke="#54544c" stroke-dasharray="3 7" stroke-width=".6"/>')
-    out.append('<circle r="143" fill="none" stroke="#4a4a42" stroke-width=".8"/>')
-    out.append('<g class="outer"><circle r="143" fill="none" stroke="#1688e8" stroke-width="1.5" stroke-dasharray="75 824"/><circle cx="143" cy="0" r="4" fill="#1688e8"/></g>')
-    out.append('<g class="inner"><ellipse rx="122" ry="60" fill="none" stroke="#a5a59a" stroke-width=".8"/><ellipse rx="60" ry="122" fill="none" stroke="#a5a59a" stroke-width=".8"/><circle cx="122" cy="0" r="3" fill="#f8f7ef"/></g>')
-    out.append('<circle r="99" fill="#10100e" stroke="#4a4a42" stroke-width=".7"/>')
-    out.append('<g class="mark"><g transform="translate(-76,-76) scale(1.4)">')
-    out.append(f'<path d="{LOGO}" fill="{PAPER}" fill-rule="evenodd"/></g></g>')
-    out.append('<path class="trace" d="M-155 120H-119L-84 85M85-85L115-117H154" stroke="#1688e8" fill="none" stroke-width="1" stroke-dasharray="4 4"/>')
+    out.append('<g transform="translate(-108,-108) scale(2)">')
+    out.append(f'<path d="{LOGO}" fill="{PAPER}" fill-rule="evenodd"/></g>')
     out.append('</g>')
     if mobile:
         out.append(lettering("olusemre.dev",49,530,20))

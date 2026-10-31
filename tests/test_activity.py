@@ -20,7 +20,7 @@ class ActivityTests(unittest.TestCase):
     def test_empty_activity_is_valid_and_not_fabricated(self):
         svg = activity.render(calendar([0] * 7))
         ET.fromstring(svg)
-        self.assertIn("0 public contributions", svg)
+        self.assertIn("0 contributions", svg)
         self.assertNotIn("nan", svg.lower())
         self.assertNotIn("infinity", svg.lower())
 
@@ -28,26 +28,50 @@ class ActivityTests(unittest.TestCase):
         data = calendar([0, 1, 0, 5, 0, 0, 2])
         data["totalContributions"] = 999
         svg = activity.render(data)
-        self.assertIn("8 public contributions", svg)
+        self.assertIn("8 contributions", svg)
         self.assertIn("3 active days", svg)
-        self.assertIn("Peak 5 / day", svg)
         self.assertNotIn("999", svg)
         ET.fromstring(svg)
 
-    def test_reduced_motion_and_no_external_dependencies(self):
+    def test_flat_static_output_has_no_dependencies_or_motion(self):
         svg = activity.render(calendar([1] * 7))
-        self.assertIn("prefers-reduced-motion:reduce", svg)
+        self.assertNotIn("animation:", svg)
+        self.assertNotIn("<animate", svg)
+        self.assertNotIn("A year of building", svg)
         self.assertNotIn("<script", svg)
         self.assertNotIn("<foreignObject", svg)
         self.assertNotIn("xlink:href", svg)
 
-    def test_mobile_monthly_total_matches_daily_total(self):
+    def test_mobile_total_matches_daily_total(self):
         data = calendar([0, 1, 0, 5, 0, 0, 2])
         svg = activity.render_mobile(data)
-        self.assertIn("8 public contributions", svg)
-        self.assertIn("monthly contributions", svg)
+        self.assertIn("8 contributions", svg)
         ET.fromstring(svg)
         ET.fromstring(activity.render_mobile(calendar([0] * 7)))
+
+    def test_private_contributions_are_counted_without_repository_details(self):
+        with tempfile.TemporaryDirectory() as folder:
+            fixture = Path(folder) / "response.json"
+            collection = {
+                "hasAnyRestrictedContributions": True,
+                "restrictedContributionsCount": 5,
+                "contributionCalendar": calendar([1, 5, 0]),
+                "privateRepository": {"name": "never-publish-this-name"},
+            }
+            fixture.write_text(json.dumps({"data": {"user": {"contributionsCollection": collection}}}))
+            data = activity.load_calendar("t0ttora", fixture, require_private=True)
+            for svg in [activity.render(data), activity.render_mobile(data)]:
+                self.assertIn("6 contributions", svg)
+                self.assertNotIn("never-publish-this-name", svg)
+                self.assertIn("Public + private", svg)
+
+    def test_missing_private_counts_cannot_silently_publish_public_only(self):
+        with tempfile.TemporaryDirectory() as folder:
+            fixture = Path(folder) / "response.json"
+            collection = {"hasAnyRestrictedContributions": False, "contributionCalendar": calendar([1])}
+            fixture.write_text(json.dumps({"data": {"user": {"contributionsCollection": collection}}}))
+            with self.assertRaisesRegex(ValueError, "private"):
+                activity.load_calendar("t0ttora", fixture, require_private=True)
 
     def test_invalid_response_fails_before_writing(self):
         with tempfile.TemporaryDirectory() as folder:

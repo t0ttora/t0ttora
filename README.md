@@ -1,47 +1,52 @@
 <a href="https://www.olusemre.dev">
   <picture>
     <source media="(max-width: 600px)" srcset="./assets/hero-mobile.svg">
-    <img src="./assets/hero.svg" width="100%" alt="Oluş Emre Demir — Design. Build. Innovate. From idea to engineered product.">
+    <img src="./assets/hero.svg" width="100%" alt="Oluş Emre Demir — Design. Build. Innovate.">
   </picture>
 </a>
 
-<br>
+[**Portfolio ↗**](https://www.olusemre.dev) &nbsp; · &nbsp; [LinkedIn](https://www.linkedin.com/in/olusemre/) &nbsp; · &nbsp; [Research journal](https://t0ttora.github.io/me492-caster-digital-twin/)
 
-Mechanical engineering student at **Yeditepe University**. Working across physical products, robotics and digital experiences.
+I’m **Oluş Emre Demir**, a mechanical engineering student at **Yeditepe University**, based in Istanbul. My work connects physical products, robotics and digital experiences.
 
-**[Explore my work ↗](https://www.olusemre.dev)** &nbsp; · &nbsp; [LinkedIn](https://www.linkedin.com/in/olusemre/) &nbsp; · &nbsp; [Research journal](https://t0ttora.github.io/me492-caster-digital-twin/)
+## Selected work
 
-<br>
+### [Arche — Caster-aware digital twin](https://github.com/t0ttora/me492-caster-digital-twin)
 
-### Currently on my workbench
+A study of passive caster dynamics, mobile robot motion and simulation-to-reality agreement. Currently in research preparation.
 
-**[Arche / Caster-aware digital twin](https://github.com/t0ttora/me492-caster-digital-twin)**<br>
-Passive caster dynamics, mobile robot motion and simulation-to-reality agreement. Research in preparation.
+[Research journal ↗](https://t0ttora.github.io/me492-caster-digital-twin/) &nbsp; · &nbsp; Mechanical modeling / Robotics
 
-**[Acoustica](https://github.com/t0ttora/acoustica)**<br>
-Room acoustics, reverberation and treatment planning. An engineering tool in the terminal.
+### [Acoustica — Room acoustics](https://github.com/t0ttora/acoustica)
 
-**[Noble Intel](https://github.com/t0ttora/intel)**<br>
-Maritime signals, retrieval-augmented intelligence and logistics risk.
+A terminal-based engineering tool for reverberation, room modes and acoustic treatment planning.
 
-<br>
+Python / Textual / Acoustics
 
-<a href="https://github.com/t0ttora?tab=repositories&amp;type=public">
-  <picture>
-    <source media="(max-width: 600px)" srcset="./assets/contributions-mobile.svg">
-    <img src="./assets/contributions.svg" width="100%" alt="Animated public activity: daily contribution heights on desktop, monthly overview on mobile. Updated daily from GitHub.">
-  </picture>
-</a>
+### [Noble Intel — Logistics intelligence](https://github.com/t0ttora/intel)
 
-<sub>Real public activity, refreshed daily. Logarithmic heights; monthly overview on mobile. Reduced-motion preferences are respected.</sub>
+Maritime signal ingestion, retrieval-augmented intelligence and logistics risk analysis.
 
-<br><br>
+Python / Data systems / RAG
 
-[Robotics](https://github.com/t0ttora/shy_boi) &nbsp; / &nbsp; [Engineering tools](https://github.com/t0ttora/acoustica) &nbsp; / &nbsp; [Web experiments](https://github.com/t0ttora?tab=repositories&amp;type=public)
+## Activity
+
+<picture>
+  <source media="(max-width: 600px)" srcset="./assets/contributions-mobile.svg">
+  <img src="./assets/contributions.svg" width="100%" alt="Daily contributions from public and private repositories. Only dates and anonymous counts are shown.">
+</picture>
+
+<sub>Public and private contributions, updated daily. Private repository names and activity details stay private.</sub>
+
+---
+
+[All public repositories](https://github.com/t0ttora?tab=repositories&amp;type=public) &nbsp; · &nbsp; [SHY BOI](https://github.com/t0ttora/shy_boi) &nbsp; · &nbsp; [NobleTracker](https://github.com/t0ttora/nobletracker)
 
 <details>
 <summary>Türkçe</summary>
 
-Yeditepe Üniversitesi makine mühendisliği öğrencisiyim. Fiziksel ürünler, robotik ve dijital deneyimler üzerine çalışıyorum. Daha geniş proje portfolyom: **[olusemre.dev](https://www.olusemre.dev/tr)**.
+Yeditepe Üniversitesi makine mühendisliği öğrencisiyim. Mekanik tasarım, robotik ve dijital ürünler üzerine çalışıyorum.
+
+Seçilmiş çalışmalarımı yukarıda, daha geniş proje portfolyomu **[olusemre.dev](https://www.olusemre.dev/tr)** adresinde bulabilirsin. Aktivite takvimi açık ve özel depolardaki katkılarımı birlikte gösterir; özel depo adları ve çalışma ayrıntıları paylaşılmaz.
 
 </details>
