@@ -1,33 +1,47 @@
-# Oluş Emre Demir
+<a href="https://www.olusemre.dev">
+  <picture>
+    <source media="(max-width: 600px)" srcset="./assets/hero-mobile.svg">
+    <img src="./assets/hero.svg" width="100%" alt="Oluş Emre Demir — Design. Build. Innovate. From idea to engineered product.">
+  </picture>
+</a>
 
-**Mechanical engineering · Product & UX engineering · Software**
+<br>
 
-I’m a mechanical engineering student at **Yeditepe University**, based in Istanbul. I build across hardware and software: robotics studies, engineering tools, web experiences, and AI applications.
+Mechanical engineering student at **Yeditepe University**. Working across physical products, robotics and digital experiences.
 
-[Portfolio](https://www.olusemre.dev) · [LinkedIn](https://www.linkedin.com/in/olusemre/) · [All public repositories](https://github.com/t0ttora?tab=repositories&type=public)
+**[Explore my work ↗](https://www.olusemre.dev)** &nbsp; · &nbsp; [LinkedIn](https://www.linkedin.com/in/olusemre/) &nbsp; · &nbsp; [Research journal](https://t0ttora.github.io/me492-caster-digital-twin/)
 
-## Selected work
+<br>
 
-| Project | What it explores | Stack / format |
-| --- | --- | --- |
-| [Caster-aware digital twin](https://github.com/t0ttora/me492-caster-digital-twin) | Passive caster dynamics and mobile-robot motion. **Research preparation and public journal; experimental results are not yet published.** | Mechanical modeling · Research |
-| [Acoustica](https://github.com/t0ttora/acoustica) | Terminal-based room acoustics: RT60, room modes, treatment planning, and reverb simulation. | Python · Textual |
-| [Noble Intel](https://github.com/t0ttora/intel) | Maritime and logistics intelligence with signal ingestion, RAG, risk scoring, and scenario simulation. | Python · REST API |
-| [SHY BOI](https://github.com/t0ttora/shy_boi) | Project showcase for a robot that responds to proximity with autonomous evasion. | Robotics · Web showcase |
-| [Portfolio](https://github.com/t0ttora/portfolio) | An interactive desk interface for exploring engineering and digital projects. | Next.js · TypeScript |
-| [NobleTracker](https://github.com/t0ttora/nobletracker) | Chrome extension for work sessions, tasks, and activity analytics, with a Google Sheets backend. | JavaScript · Chrome MV3 |
+### Currently on my workbench
 
-## Areas of interest
+**[Arche / Caster-aware digital twin](https://github.com/t0ttora/me492-caster-digital-twin)**<br>
+Passive caster dynamics, mobile robot motion and simulation-to-reality agreement. Research in preparation.
 
-- **Engineering:** mechanical design, CAD/CAM, robotics, and simulation.
-- **Software:** Python tools, TypeScript/JavaScript applications, and human-centered interfaces.
-- **Exploration:** AI applications, acoustics, and the overlap between music and engineering.
+**[Acoustica](https://github.com/t0ttora/acoustica)**<br>
+Room acoustics, reverberation and treatment planning. An engineering tool in the terminal.
 
-My [personal site](https://www.olusemre.dev) brings together the broader project portfolio. Repository READMEs describe setup, current scope, and usage terms.
+**[Noble Intel](https://github.com/t0ttora/intel)**<br>
+Maritime signals, retrieval-augmented intelligence and logistics risk.
+
+<br>
+
+<a href="https://github.com/t0ttora?tab=repositories&amp;type=public">
+  <picture>
+    <source media="(max-width: 600px)" srcset="./assets/contributions-mobile.svg">
+    <img src="./assets/contributions.svg" width="100%" alt="Animated public activity: daily contribution heights on desktop, monthly overview on mobile. Updated daily from GitHub.">
+  </picture>
+</a>
+
+<sub>Real public activity, refreshed daily. Logarithmic heights; monthly overview on mobile. Reduced-motion preferences are respected.</sub>
+
+<br><br>
+
+[Robotics](https://github.com/t0ttora/shy_boi) &nbsp; / &nbsp; [Engineering tools](https://github.com/t0ttora/acoustica) &nbsp; / &nbsp; [Web experiments](https://github.com/t0ttora?tab=repositories&amp;type=public)
 
 <details>
 <summary>Türkçe</summary>
 
-Yeditepe Üniversitesi makine mühendisliği öğrencisiyim. Mekanik tasarım, robotik, mühendislik araçları ve web deneyimleri üzerine çalışıyorum. Seçilmiş çalışmalarımı yukarıda, daha geniş proje portfolyomu [kişisel sitemde](https://www.olusemre.dev/tr) bulabilirsin.
+Yeditepe Üniversitesi makine mühendisliği öğrencisiyim. Fiziksel ürünler, robotik ve dijital deneyimler üzerine çalışıyorum. Daha geniş proje portfolyom: **[olusemre.dev](https://www.olusemre.dev/tr)**.
 
 </details>
